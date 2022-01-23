@@ -100,9 +100,11 @@ namespace CrispyCrypto
             Console.WriteLine();
             cipher = "KYVE KYV KIRMVCCVI ZE KYV URIB KYREBJ PFL WFI PFLI KZEP JGRIB";
             Console.WriteLine($"Cipher: {cipher}");
+            Console.WriteLine($"Most common trigram: {brute.Analysis.MostCommonPolygram(cipher, 3)}");
+            Console.WriteLine($"Most common digram: {brute.Analysis.MostCommonPolygram(cipher, 2)}");
             brute = new ShiftCipherBruteForce(cipher);
             plainText = brute.BruteForce();
-            Console.WriteLine(plainText);
+            Console.WriteLine($"Plain: {plainText}");
             Console.WriteLine("Cipher text statistics.");
             brute.Analysis.CalculateCharFrequencies();
             brute.Analysis.PrintCharFrequencies();

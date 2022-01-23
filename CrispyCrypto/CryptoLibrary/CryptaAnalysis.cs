@@ -15,15 +15,47 @@ namespace CryptoLibrary
             Frequencies = new Dictionary<char, int>();
         }
 
+        public string MostCommonPolygram(string plainText, int size)
+        {
+            var dict = new Dictionary<string, int>();
+
+            foreach (var word in GetWords(plainText))
+            {
+                for (int i = 0; i < word.Length - size; i++)
+                {
+                    var diGram = word.Substring(i, size);
+                    if (dict.ContainsKey(diGram))
+                        dict[diGram]++;
+                    else
+                        dict.Add(diGram, 1);
+                }
+            }
+
+            var result = new KeyValuePair<string, int>(null, 0);
+            foreach (var keyValue in dict)
+            {
+                if (keyValue.Value > result.Value)
+                {
+                    result = keyValue;
+                }
+            }
+            return result.Key;
+        }
+
         public bool HasCommonWords(string plainText)
         {
             var count = 0;
-            foreach (var word in plainText.Split(' '))
+            foreach (var word in GetWords(plainText))
             {
                 if (Words.Common.Contains(word))
                     count++;
             }
             return count >= 1;
+        }
+
+        private static string[] GetWords(string plainText)
+        {
+            return plainText.Split(' ');
         }
 
         public void CalculateCharFrequencies()
