@@ -18,14 +18,14 @@ namespace CryptoLibrary
             Analysis = new CryptaAnalysis(cipherText);
         }
 
-        public string BruteForce()
+        public string BruteForce(int numOfWords = 1)
         {
             string result = CipherText;
 
             for (int i = 1; i < 'z' - 'a' + 1; i++)
             {
                 result = result.LeftShiftString(1);
-                if (Analysis.HasCommonWords(result))
+                if (Analysis.HasCommonWords(result, numOfWords))
                     return result;
             }
 

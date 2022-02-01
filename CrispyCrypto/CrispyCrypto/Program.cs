@@ -122,6 +122,26 @@ namespace CrispyCrypto
             Console.WriteLine($"Plain: {plain}");
             plain.PrinteVigenereEncoding(key);
             Console.WriteLine($"Cipher: {plain.VigenereEncode(key)}");
+
+            // some random monoalphabet
+            Console.WriteLine();
+            var cipher = "MFV JVOM MFUNCO UN LUIV ZGV IGVV JWM SDW QZN CUTV MFVP MD MFV JUGHO ZNH MFV JVVO";
+            var brute = new ShiftCipherBruteForce(cipher);
+            Console.WriteLine($"Cipher: {cipher}");
+            Console.WriteLine($"Most common trigram: {brute.Analysis.MostCommonPolygram(cipher, 3)}");
+            Console.WriteLine($"Most common digram: {brute.Analysis.MostCommonPolygram(cipher, 2)}");
+
+            Console.WriteLine("Cipher text statistics.");
+            brute.Analysis.CalculateCharFrequencies();
+            brute.Analysis.PrintCharFrequencies();
+
+            // replace the trigram and other letters in the cipher text 
+            var trigram = brute.Analysis.MostCommonPolygram(cipher, 3);
+            cipher = cipher.Replace(trigram[2], 'E').Replace('T', 'V').Replace('S', 'Y').Replace('O', 'S').Replace('D', 'O').Replace('H', 'D');
+            cipher = cipher.Replace(trigram[0], 'T').Replace(trigram[1], 'H');
+            cipher = cipher.Replace('P', 'M').Replace('J', 'B').Replace('I', 'F').Replace('U', 'I')
+                .Replace('G', 'R').Replace('C', 'G').Replace('Z', 'A').Replace('W', 'U').Replace('Q', 'C');
+            Console.WriteLine(cipher);
             #endregion
 #endif
         }

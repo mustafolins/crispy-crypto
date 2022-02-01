@@ -21,7 +21,7 @@ namespace CryptoLibrary
 
             foreach (var word in GetWords(plainText))
             {
-                for (int i = 0; i < word.Length - size; i++)
+                for (int i = 0; i <= word.Length - size; i++)
                 {
                     var diGram = word.Substring(i, size);
                     if (dict.ContainsKey(diGram))
@@ -42,7 +42,7 @@ namespace CryptoLibrary
             return result.Key;
         }
 
-        public bool HasCommonWords(string plainText)
+        public bool HasCommonWords(string plainText, int numOfWords)
         {
             var count = 0;
             foreach (var word in GetWords(plainText))
@@ -50,7 +50,7 @@ namespace CryptoLibrary
                 if (Words.Common.Contains(word))
                     count++;
             }
-            return count >= 1;
+            return count >= numOfWords;
         }
 
         private static string[] GetWords(string plainText)
