@@ -1,7 +1,8 @@
 ﻿//#define examples
 #define classwork
 //#define intro
-#define caesar
+//#define caesar
+#define substition
 
 using CryptoLibrary;
 using System;
@@ -112,6 +113,15 @@ namespace CrispyCrypto
             brute = new ShiftCipherBruteForce(plainText);
             brute.Analysis.CalculateCharFrequencies();
             brute.Analysis.PrintCharFrequencies();
+            #endregion
+#elif substition
+            #region SubstitionCipher
+            // vigenere cipher
+            var plain = "HOW MUCH WOOD WOULD A WOODCHUCK CHUCK";
+            var key = "REVOLUTION";
+            Console.WriteLine($"Plain: {plain}");
+            plain.PrinteVigenereEncoding(key);
+            Console.WriteLine($"Cipher: {plain.VigenereEncode(key)}");
             #endregion
 #endif
         }
