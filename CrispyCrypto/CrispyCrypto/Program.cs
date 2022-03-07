@@ -2,10 +2,12 @@
 #define classwork
 //#define intro
 //#define caesar
-#define substition
+//#define substition
+#define sdes
 
 using CryptoLibrary;
 using System;
+using System.Linq;
 
 namespace CrispyCrypto
 {
@@ -143,6 +145,37 @@ namespace CrispyCrypto
                 .Replace('G', 'R').Replace('C', 'G').Replace('Z', 'A').Replace('W', 'U').Replace('Q', 'C');
             Console.WriteLine(cipher);
             #endregion
+#elif sdes
+            char ch = 'a';
+
+            // get bits
+            bool[] bits = ch.GetBits();
+            bits.PrintBits();
+            Console.WriteLine();
+            bits.LeftShift().PrintBits();
+            Console.WriteLine("\nSession Key:");
+            var sessionKey = new bool[] { false, true, false, false, false, false, false, true, false, true };
+            sessionKey.PrintBits();
+            Console.WriteLine("\nP10:");
+            var p10 = sessionKey.P10();
+            p10.PrintBits();
+            Console.WriteLine("\nLeft Shift two halves and combine:");
+            (bool[] left, bool[] right) = p10.SplitKey();
+            var shift = left.LeftShift().CombineBits(right.LeftShift());
+            shift.PrintBits();
+            Console.WriteLine("\nP8 (Key 1):");
+            var p8 = shift.P8();
+            p8.PrintBits();
+            Console.WriteLine("\nP8 (Key 2)");
+            left.LeftShift().LeftShift().LeftShift().CombineBits(right.LeftShift().LeftShift().LeftShift()).P8().PrintBits();
+
+            // library function
+            Console.WriteLine("\nLibrary function:");
+            (bool[] key1, bool[] key2) = sessionKey.GenerateKeys();
+            Console.WriteLine("\nKey 1:");
+            key1.PrintBits();
+            Console.WriteLine("\nKey 2:");
+            key2.PrintBits();
 #endif
         }
     }
