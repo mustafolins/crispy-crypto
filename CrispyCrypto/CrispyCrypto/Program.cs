@@ -146,6 +146,7 @@ namespace CrispyCrypto
             Console.WriteLine(cipher);
             #endregion
 #elif sdes
+            #region SDESEncryption
             char ch = 'a';
 
             // get bits
@@ -222,6 +223,7 @@ namespace CrispyCrypto
             Console.WriteLine("\nClass work (Encrypt 'e'):");
             sessionKey = new bool[] { false, true, true, false, true, false, true, false, true, false };
             'e'.GetCharBits().Encrypt(sessionKey).PrintBits();
+            #endregion
 #endif
         }
     }
