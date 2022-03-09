@@ -149,7 +149,7 @@ namespace CrispyCrypto
             char ch = 'a';
 
             // get bits
-            bool[] bits = ch.GetBits();
+            bool[] bits = ch.GetCharBits();
             bits.PrintBits();
             Console.WriteLine();
             bits.LeftShift().PrintBits();
@@ -170,12 +170,58 @@ namespace CrispyCrypto
             left.LeftShift().LeftShift().LeftShift().CombineBits(right.LeftShift().LeftShift().LeftShift()).P8().PrintBits();
 
             // library function
-            Console.WriteLine("\nLibrary function:");
+            Console.WriteLine("\n\nLibrary function (keys):");
             (bool[] key1, bool[] key2) = sessionKey.GenerateKeys();
-            Console.WriteLine("\nKey 1:");
+            Console.WriteLine("Key 1:");
             key1.PrintBits();
             Console.WriteLine("\nKey 2:");
             key2.PrintBits();
+
+            Console.WriteLine();
+            // 01110010
+            var plainTextBits = new bool[] { false, true, false, false, true, true, true, false };
+            plainTextBits.PrintBits();
+            Console.WriteLine("\nInitial permuatation");
+            var ip = plainTextBits.InitialPermutation();
+            ip.PrintBits();
+            Console.WriteLine("\nSplit Bits");
+            (left, right) = ip.SplitBits();
+            Console.Write("Left:\t");
+            left.PrintBits();
+            Console.Write("Right:\t");
+            right.PrintBits();
+            Console.WriteLine("\nExpand and mutate (right):");
+            var em = right.ExpandAndMutate();
+            em.PrintBits();
+            Console.WriteLine();
+            key1.PrintBits();
+            Console.WriteLine("\tKey 1");
+            var xored = em.XOR(key1);
+            xored.PrintBits();
+            Console.WriteLine("\tXORing");
+            (bool[] xorLeft, bool[] xorRight) = xored.SplitBits();
+            xorLeft.S0().PrintBits();
+            Console.WriteLine();
+            xorRight.S1().PrintBits();
+            Console.WriteLine();
+            var combinedSs = xorRight.S1().CombineBits(xorLeft.S0());
+            combinedSs.PrintBits();
+            Console.WriteLine();
+            combinedSs.P4().PrintBits();
+            Console.WriteLine("\nfK");
+            combinedSs.P4().XOR(left).PrintBits();
+
+            Console.WriteLine("\n\nLibrary function (fK):");
+            plainTextBits.Fk(key1).PrintBits();
+            Console.WriteLine();
+            plainTextBits.FkRight(plainTextBits.Fk(key1), key2).PrintBits();
+
+            Console.WriteLine("\nEncrypt");
+            plainTextBits.Encrypt(sessionKey).PrintBits();
+
+            Console.WriteLine("\nClass work (Encrypt 'e'):");
+            sessionKey = new bool[] { false, true, true, false, true, false, true, false, true, false };
+            'e'.GetCharBits().Encrypt(sessionKey).PrintBits();
 #endif
         }
     }
