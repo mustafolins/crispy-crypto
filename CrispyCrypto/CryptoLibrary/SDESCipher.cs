@@ -142,7 +142,7 @@ namespace CryptoLibrary
             if (input == null || input.Length != 8)
                 throw new ArgumentOutOfRangeException($"Length of bit array should be 8 but got {input.Length}");
 
-            return new bool[] { input[8 - 4], input[8 - 1], input[8 - 3], input[8 - 5], input[8 - 7], input[8 - 2], input[8 - 8], input[8 - 6] };
+            return new bool[] { input[8 - 6], input[8 - 8], input[8 - 2], input[8 - 7], input[8 - 5], input[8 - 3], input[8 - 1], input[8 - 4] };
         }
 
         public static bool[] ExpandAndMutate(this bool[] input)
@@ -232,9 +232,7 @@ namespace CryptoLibrary
 
         public static bool[] Fk(this bool[] plainTextBits, bool[] key)
         {
-            // initial permuatation
-            var ip = plainTextBits.InitialPermutation();
-            (bool[] left, bool[] right) = ip.SplitBits();
+            (bool[] left, bool[] right) = plainTextBits.SplitBits();
             // expand and mutate
             var em = right.ExpandAndMutate();
             // xored
@@ -246,22 +244,21 @@ namespace CryptoLibrary
             return combinedSs.P4().XOR(left);
         }
 
-        public static bool[] FkRight(this bool[] plainTextBits, bool[] fK, bool[] key)
+        public static bool[] FkRight(this bool[] fK, bool[] key, bool[] ip)
         {
-            // initial permuatation
-            var ip = plainTextBits.InitialPermutation();
-            (bool[] right, bool[] left) = ip.SplitBits();
-            var swapped = right.CombineBits(fK);
-            (left, right) = swapped.SplitBits();
-            // expand and mutate
-            var em = right.ExpandAndMutate();
-            // xored
-            var xored = em.XOR(key);
-            (bool[] xorLeft, bool[] xorRight) = xored.SplitBits();
-            // combined s boxes
-            var combinedSs = xorRight.S1().CombineBits(xorLeft.S0());
-            // result of fk
-            return combinedSs.P4().XOR(left);
+            if (fK == null)
+                throw new ArgumentNullException(nameof(fK));
+            if (fK.Length != 4)
+                throw new ArgumentOutOfRangeException($"Length of bit array for fK should be 4 but got {fK.Length}");
+            bool[] swapped = Switch(ip, fK);
+            return swapped.Fk(key);
+        }
+
+        private static bool[] Switch(bool[] plainTextBits, bool[] fK)
+        {
+            (_, bool[] right) = plainTextBits.SplitBits();
+            var swapped = fK.CombineBits(right);
+            return swapped;
         }
 
         public static bool[] Encrypt(this bool[] plainTextBits, bool[] sessionKey)
@@ -272,10 +269,14 @@ namespace CryptoLibrary
                 return plainTextBits;
 
             (bool[] key1, bool[] key2) = sessionKey.GenerateKeys();
-            var fK = plainTextBits.Fk(key1);
-            var fKR = plainTextBits.FkRight(fK, key2);
+
+            // initial permuatation
+            var ip = plainTextBits.InitialPermutation();
+
+            var fK = ip.Fk(key1);
+            var fKR = fK.FkRight(key2, ip);
             var combined = fK.CombineBits(fKR);
-            return combined.InitialInversePermutation().Reverse().ToArray();
+            return combined.InitialInversePermutation().ToArray();
         }
     }
 }
